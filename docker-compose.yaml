@@ -1,0 +1,32 @@
+services:
+  app:
+    # implements docker command `docker build -t analytics-api -f Dockerfile .`
+    image: analytics-api:v1
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # app exposed at port (container port)
+    environment:
+      - PORT=8002
+
+    # host port: container port
+    ports:
+      - "8002:8002"
+
+    # run light-weight uvicorn for dev mode (overrides dockerfile `CMD ["/opt/run.sh"]`, which is PROD setup)
+    command: uvicorn main:app --host 0.0.0.0 --port 8002 --reload
+
+    # storage with read-write permissions (rw), other option is read-only (ro)
+    volumes:
+      - ./src:/code:rw
+
+    # watch for changes in certain files and rebuild container if changes are detected
+    develop:
+      watch:
+        - action: rebuild
+          path: Dockerfile
+        - action: rebuild
+          path: requirements.txt
+        - action: rebuild
+          path: compose.yaml
