@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 
 from pydantic import BaseModel
@@ -5,8 +6,10 @@ from pydantic import BaseModel
 
 class EventRead(BaseModel):
     id: int
-    path: Optional[str] = None
+    path: str
     description: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
 
 
 class EventCreate(BaseModel):

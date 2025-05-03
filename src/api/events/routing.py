@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import JSONResponse
-from sqlmodel import Session, select, update, delete
+from sqlmodel import Session, select
 
 from api.db.session import get_session
-from .models import EventModel
+from .models import EventModel, get_utc_now
 from .schemas import EventRead, EventCreate, EventUpdate, EventListSchema
 
 router = APIRouter()
@@ -47,6 +46,8 @@ async def update_event(event_id: int, payload: EventUpdate, session: Session = D
     for k, v in data.items():
         setattr(obj, k, v)
 
+    obj.updated_at = get_utc_now()
+
     session.add(obj)
     session.commit()
     session.refresh(obj)  # to get newly created obj with id
@@ -55,6 +56,11 @@ async def update_event(event_id: int, payload: EventUpdate, session: Session = D
 
 @router.delete('/{event_id}', response_model=dict)
 async def update_event(event_id: int, session: Session = Depends(get_session)):
-    query = delete(EventModel).where(EventModel.id == event_id)
-    res = session.exec(query)
-    return {'message': f'Deleted {res.rowcount} event with id {event_id}'}
+    query = select(EventModel).where(EventModel.id == event_id)
+    obj = session.exec(query).first()
+    if not obj:
+        raise HTTPException(status_code=404, detail=f'Event with id {event_id} is not found')
+
+    session.delete(obj)
+    session.commit()
+    return {'message': f'Deleted event with id {event_id}'}
