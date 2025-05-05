@@ -1,4 +1,4 @@
-### This repo contains analytics API
+### This repo contains FastAPI dockerized project with Postgres db
 
 What's used in this project:
 1. **FastAPI** - API framework - app location http://127.0.0.1:8002, documentation http://127.0.0.1:8002/docs
@@ -13,7 +13,7 @@ What's used in this project:
 - `docker compose down` or `docker compose down -v` (to remove volumes)
 - `docker compose run app bin/bash` (to enter app cmd) or `docker compose run app python` (to enter app python shell)
 
-**DB access**:
+**DB access (via dockerized PGAdmin)**:
 - Login to PGAdmin at http://localhost:5050/ (admin@example.com/admin) 
 - Add New Server - General: Name Timescale, Connection: Host db_service, Port 5432, Username time_user, Password time_pw
 - Check created tables `SELECT table_name
@@ -21,5 +21,10 @@ FROM information_schema.tables
 WHERE table_schema = 'public'` or run query
 
 
-
 Note: When recreating requirements.txt - delete `pywin` (windows-only package)
+
+Swagger documentation
+![img](readme_img/swagger.png)
+
+DB example results
+![img](readme_img/db_example.png)
