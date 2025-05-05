@@ -36,6 +36,11 @@ services:
         - action: rebuild
           path: compose.yaml
 
+    # start after db
+    depends_on:
+      db_service:
+        condition: service_healthy
+
   # setup timescaledb (postgresdb for time-series data)
   db_service:
     image: timescale/timescaledb:latest-pg17
